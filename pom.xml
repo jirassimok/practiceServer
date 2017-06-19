@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>teradata.jk186060.practice</groupId>
+    <artifactId>learnjetty</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <!-- use dependency:sources to get sources -->
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <main-class>Main</main-class>
+        <cli.main-class>${main-class}</cli.main-class>
+
+        <jetty.version>9.4.6.v20170531</jetty.version>
+        <jersey.version>2.26-b06</jersey.version>
+
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <!--<repositories>-->
+      <!--<repository>-->
+        <!--<id>repo2_maven_org</id>-->
+        <!--<url>http://repo2.maven.org/maven2</url>-->
+      <!--</repository>-->
+    <!--</repositories>-->
+
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+
+        <!--
+        including this drags in an old version of JAX-RS, which break at runtime
+        I've borrowed PATCH.java from swagger.
+        -->
+        <!--<dependency>-->
+            <!--<groupId>io.swagger</groupId>-->
+            <!--<artifactId>swagger-jaxrs</artifactId>-->
+            <!--<version>1.5.13</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+          <groupId>org.glassfish.jersey.core</groupId>
+          <artifactId>jersey-common</artifactId>
+          <version>${jersey.version}</version>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>org.glassfish.jersey.core</groupId>-->
+            <!--<artifactId>jersey-server</artifactId>-->
+            <!--<version>${jersey.version}</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-jetty-http</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-jetty-servlet</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>${jersey.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>Server</finalName>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>executable</shadedClassifierName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Main-Class>${main-class}</Main-Class>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.skife.maven</groupId>
+                <artifactId>really-executable-jar-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <configuration>
+                    <!-- name for really-executable jar -->
+                    <!-- <programFile>executable-jar</programFile> -->
+                    <flags>-Xmx1G</flags>
+                    <classifier>executable</classifier>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>really-executable-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
