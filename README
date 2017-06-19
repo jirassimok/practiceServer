@@ -1,0 +1,4 @@
+Simple server using Jersey and Jetty.
+
+This mostly works, except that the `DictionaryResource` class
+is not properly registered, so it doesn't do anything.
