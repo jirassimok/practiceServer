@@ -1,8 +1,6 @@
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import org.glassfish.jersey.internal.inject.AbstractBinder;
+import org.glassfish.jersey.internal.inject.Binder;
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -17,25 +15,17 @@ public class Main
     public static void main(String[] args)
             throws Exception
     {
-        ResourceConfig config = new ResourceConfig();
-        config.register(new DictionaryResource());
-
+        ResourceConfig config = new ResourceConfig(DictionaryResource.class);
+//        Binder binder = makeBinder(new DictionaryResource());
+//        config.register(binder);
         URI uri = UriBuilder.fromUri("http://localhost/").port(PORT).build();
         Server server = JettyHttpContainerFactory.createServer(uri, config, false);
-
+        
 //        Server server = new Server();
 //        HttpConfiguration httpconf = new HttpConfiguration();
 //        httpconf.setSecurePort(PORT);
 //        ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory(httpconf));
 //        connector.setPort(PORT);
-
-        /*
-        Next step: need to add handlers
-
-        org.eclipse.jetty.server.handler.AbstractHangler will be useful as a basis
-        org.glassfish.jersey.jetty.JettyHttpContainer will be useful for reference
-         */
-//        server.addConnector(connector);
 
         try {
             server.start();
@@ -50,5 +40,16 @@ public class Main
             System.out.println("Stopping");
             server.stop();
         }
+    }
+    
+    private static AbstractBinder makeBinder(Object resource)
+    {
+        return new AbstractBinder() {
+            @Override
+            protected void configure()
+            {
+                bind(resource).to(resource.getClass());
+            }
+        };
     }
 }
