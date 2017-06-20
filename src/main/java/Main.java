@@ -1,6 +1,7 @@
 import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.internal.inject.Binder;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -15,7 +16,9 @@ public class Main
     public static void main(String[] args)
             throws Exception
     {
-        ResourceConfig config = new ResourceConfig(DictionaryResource.class);
+        ResourceConfig config = new ResourceConfig();
+        config.register(DictionaryResource.class);
+        config.register(JacksonFeature.class);
 //        Binder binder = makeBinder(new DictionaryResource());
 //        config.register(binder);
         URI uri = UriBuilder.fromUri("http://localhost/").port(PORT).build();

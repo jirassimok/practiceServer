@@ -1,11 +1,12 @@
 //import io.swagger.jaxrs.PATCH;
 
+import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -14,29 +15,63 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Path("/dict")
+@Singleton
 public class DictionaryResource
 {
-    Map<String, String> dict = new HashMap<>();
+    Map<String, String> dictionary;
+
+    public DictionaryResource()
     {
-        dict.put("1", "2");
+        System.err.println("created");
+        dictionary = new HashMap<>();
+        dictionary.put("1", "2");
     }
 
-    @POST
-    // @Consumes(MediaType.APPLICATION_JSON)
-    public Response patch(Dictionary dict)
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response putMap(Map<String, String> dict)
     {
+        System.err.println(dict);
+        dictionary = new HashMap<>(dict);
         return Response.status(Status.OK).build();
     }
 
     @GET
-    // @Produces(MediaType.APPLICATION_JSON)
-    public String get(@QueryParam("key") String key)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMap()
     {
-        if (key == null) {
-            return null; // Response.status(Status.NOT_IMPLEMENTED).build();
+        return Response.status(Status.OK).entity(dictionary).build();
+    }
+
+    @Path("/{key}")
+    @PUT
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response putKey(@PathParam("key") String key, String body)
+    {
+        System.err.println(body);
+        Response response;
+        if (dictionary.containsKey(key)) {
+            response = Response.status(Status.OK).build();
         }
         else {
-            return dict.getOrDefault(key, "missing"); // Response.status(Status.NOT_IMPLEMENTED).entity(dict).build();
+            response = Response.status(Status.CREATED).build();
         }
+        dictionary.put(key, body);
+        return response;
+    }
+
+    @Path("/{key}")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getKey(@PathParam("key") String key)
+    {
+        Response response;
+        if (dictionary.containsKey(key)) {
+            response = Response.status(Status.OK).entity(dictionary.get(key)).build();
+        }
+        else {
+            response = Response.status(Status.NOT_FOUND).build();
+        }
+        return response;
     }
 }
