@@ -8,18 +8,29 @@
     <artifactId>learnjetty</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>base</module>
+        <module>guicey</module>
+    </modules>
+
     <!-- use dependency:sources to get sources -->
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <main-class>Main</main-class>
-        <cli.main-class>${main-class}</cli.main-class>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
 
         <jetty.version>9.4.6.v20170531</jetty.version>
         <jersey.version>2.26-b06</jersey.version>
 
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <shade-plugin.version>3.0.0</shade-plugin.version>
+        <shade-plugin.transformer-implementation>org.apache.maven.plugins.shade.resource.ManifestResourceTransformer</shade-plugin.transformer-implementation>
+
+        <!--<executable-name></executable-name>-->
+        <!--<really-executable-name></really-executable-name>-->
+        <!--<main-class></main-class>-->
     </properties>
 
     <!--<repositories>-->
@@ -91,53 +102,55 @@
     </dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>Server</finalName>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>executable</shadedClassifierName>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Main-Class>${main-class}</Main-Class>
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${shade-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <shadedArtifactAttached>true</shadedArtifactAttached>
+                                <shadedClassifierName>executable</shadedClassifierName>
+                                <finalName>${executable-name}</finalName>
+                                <transformers>
+                                    <transformer implementation="${shade-plugin.transformer-implementation}">
+                                        <manifestEntries>
+                                            <Main-Class>${main-class}</Main-Class>
+                                        </manifestEntries>
+                                    </transformer>
+                                </transformers>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
 
-            <plugin>
-                <groupId>org.skife.maven</groupId>
-                <artifactId>really-executable-jar-maven-plugin</artifactId>
-                <version>1.4.0</version>
-                <configuration>
-                    <!-- name for really-executable jar -->
-                    <!-- <programFile>executable-jar</programFile> -->
-                    <flags>-Xmx1G</flags>
-                    <classifier>executable</classifier>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>really-executable-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
+                <plugin>
+                    <groupId>org.skife.maven</groupId>
+                    <artifactId>really-executable-jar-maven-plugin</artifactId>
+                    <version>1.4.0</version>
+                    <configuration>
+                        <!-- name for really-executable jar -->
+                        <programFile>${really-executable-name}</programFile>
+                        <flags>-Xmx1G</flags>
+                        <classifier>executable</classifier>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>really-executable-jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
 </project>

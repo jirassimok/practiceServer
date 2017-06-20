@@ -1,3 +1,4 @@
+package base;
 //import io.swagger.jaxrs.PATCH;
 
 import javax.inject.Singleton;

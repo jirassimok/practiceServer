@@ -1,3 +1,5 @@
+package base;
+
 import java.util.HashMap;
 
 public class Dictionary<K, V>
