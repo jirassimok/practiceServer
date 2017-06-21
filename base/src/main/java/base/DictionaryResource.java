@@ -2,16 +2,12 @@ package base;
 //import io.swagger.jaxrs.PATCH;
 
 import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,4 +71,47 @@ public class DictionaryResource
         }
         return response;
     }
+
+
+    @GET
+    @Path("/file")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getFile(@QueryParam("path") String path)
+    {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(path));
+            String line;
+            StringBuilder sb = new StringBuilder();
+            while((line = reader.readLine()) != null){
+                sb.append(line);
+                sb.append(System.getProperty("line.separator"));
+            }
+            reader.close();
+            return sb.toString();
+        } catch (FileNotFoundException e) {
+            System.err.println("file does not exist!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @GET
+    @Path("/filelist")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getFileList(@QueryParam("path") String path)
+    {
+        File folder = new File(path);
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0;i < folder.list().length;i++){
+            sb.append(folder.list()[i]);
+            sb.append(System.getProperty("line.separator"));
+        }
+        return sb.toString();
+    }
+
+
+
+
+
 }
